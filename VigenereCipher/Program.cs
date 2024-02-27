@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 class VigenereCipher
 {
@@ -7,10 +7,10 @@ class VigenereCipher
         while (true)
         {
             Console.WriteLine("Iveskite teksta:");
-            string inputText = Console.ReadLine().ToUpper();
+            string inputText = Console.ReadLine();
 
             Console.WriteLine("Iveskite rakta:");
-            string key = Console.ReadLine().ToUpper();
+            string key = Console.ReadLine();
 
             Console.WriteLine("Pasirinkite veiksma:");
             Console.WriteLine("1 - Sifravimas");
@@ -23,13 +23,17 @@ class VigenereCipher
                 switch (choice)
                 {
                     case 1:
-                        string encryptedText = Encrypt(inputText, key);
+                        string encryptedText = Encrypt(inputText.ToUpper(), key.ToUpper());
+                        string encryptedAscii = ASCII(inputText, key);
                         Console.WriteLine($"Sifruotas tekstas: {encryptedText}");
+                        Console.WriteLine($"Sifruotas ASCII tekstas: {encryptedAscii}");
                         break;
 
                     case 2:
-                        string decryptedText = Decrypt(inputText, key);
+                        string decryptedText = Decrypt(inputText.ToUpper(), key.ToUpper());
                         Console.WriteLine($"Desifruotas tekstas: {decryptedText}");
+                        string decryptedAscii = DeASCII(inputText, key);
+                        Console.WriteLine($"Desifruotas ASCII tekstas: {decryptedAscii}");
                         break;
 
                     case 0:
@@ -114,5 +118,55 @@ class VigenereCipher
         }
 
         return decryptedText;
+    }
+
+    public static string ASCII(string inputText, string key)
+    {
+        string result = "";
+        int keyIndex = 0;
+        int alphabetSize = 95;
+
+        foreach (char c in inputText)
+        {
+            if(c >= '!' && c<='~')
+            {
+                int cIndex = c - '!';
+                int kIndex = key[keyIndex] - '!';
+                int letterIndex = (cIndex + kIndex) % alphabetSize;
+                result += (char)('!' + letterIndex);
+                keyIndex = (keyIndex + 1) % key.Length;
+            }
+            else
+            {
+                result += c;
+            }
+        }
+        return result;
+        
+    }
+
+    public static string DeASCII(string inputText, string key)
+    {
+        string result = "";
+        int keyIndex = 0;
+        int alphabetSize = 95;
+
+        foreach (char c in inputText)
+        {
+            if (c >= '!' && c <= '~')
+            {
+                int cIndex = c - '!';
+                int kIndex = key[keyIndex] - '!';
+                int letterIndex = (cIndex - kIndex + alphabetSize) % alphabetSize;
+                result += (char)('!' + letterIndex);
+                keyIndex = (keyIndex + 1) % key.Length;
+            }
+            else
+            {
+                result += c;
+            }
+        }
+        return result;
+
     }
 }
